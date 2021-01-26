@@ -1,0 +1,27 @@
+TimeTable Template Info
+CMD:010327478
+start_time:08:45:00
+short_break:6.0
+long_break:12.0
+sleep_hour:8.0
+work_hour:7.0
+lunch_hour:1.0
+dinner_hour:2.0
+self_care:1.0
+self_development_hour:2.0
+social_hour:0.0
+planned_date:2020-12-14
+Schedule
+08:45,10:45,Work
+10:45,10:51,Break
+10:51,12:45,Work
+12:45,13:45,Lunch
+13:45,15:15,Work
+15:15,15:21,Break
+15:21,16:45,Work
+16:45,17:45,Free slot
+16:45,17:45,Exercise
+17:45,19:45,Dinner
+19:45,19:57,Long break
+19:57,20:57,self_development
+20:57,21:09,Long break
