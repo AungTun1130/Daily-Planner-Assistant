@@ -48,27 +48,36 @@ def Tasks(current_frame=None):
         pad = 20
         Frame_init = LabelFrame(root, padx=pad, pady=pad)
         Frame_init.pack()
-        Categories(Frame_init, import_categories())
-        Frame1 = LabelFrame(Frame_init, text="Available Tasks", padx=pad, pady=pad)
-        Frame2 = LabelFrame(Frame_init, text="Task", padx=pad, pady=pad)
+        Categories(Frame_init, timetable_template.TimeTableTemplateClass().Category)
+        Frame1 = LabelFrame(Frame_init, text="Title", padx=pad, pady=pad)
+        Frame2 = LabelFrame(Frame_init, text="Available Tasks", padx=pad, pady=pad)
+        Frame3 = LabelFrame(Frame_init, text="Task", padx=pad, pady=pad)
         Frame1.grid(row=1, column=0, sticky=N + S, padx=pad, pady=pad)
-        Frame2.grid(row=1, column=1, sticky=N + S, columnspan=2, padx=pad, pady=pad)
-        return Frame_init, Frame1, Frame2
+        Frame2.grid(row=1, column=1, sticky=N + S, padx=pad, pady=pad)
+        Frame3.grid(row=1, column=2, sticky=N + S, columnspan=2, padx=pad, pady=pad)
+        return Frame_init, Frame1, Frame2,Frame3
 
-    def import_categories():
-        category_items = []
-        for i in np.array(tasks_database.query_task())[:, 1]:
-            if len(category_items) > 0:
-                if category_items.count(i) == 0:
-                    category_items.append(i)
-            else:
-                category_items.append(i)
-        return category_items
+    # def import_categories():
+    #     category_items = []
+    #     for i in np.array(tasks_database.query_task())[:, 1]:
+    #         if len(category_items) > 0:
+    #             if category_items.count(i) == 0:
+    #                 category_items.append(i)
+    #         else:
+    #             category_items.append(i)
+    #     return category_items
 
-    def tasks_for_each_category(category):
+    def titles_for_each_category(category):
         list_items = []
         for item in tasks_database.query_task():
             if item[1] == category:
+                list_items.append(item)
+        return list_items
+
+    def tasks_for_each_title(title,category):
+        list_items = []
+        for item in tasks_database.query_task():
+            if item[2] == title and item[1] == category:
                 list_items.append(item)
         return list_items
 
@@ -81,100 +90,104 @@ def Tasks(current_frame=None):
         selected_category = StringVar()
         selected_category.set(items[0])
         drop = OptionMenu(Frame_init, selected_category, *items, command=new_task_mode)
-        drop.grid(row=0, column=1, padx=10, sticky=W + E)
-        Button(Frame_init, text="+/- Category", command=edit_category).grid(row=0, column=2, sticky=W + E)
+        drop.grid(row=0, column=1,columnspan =2, padx=10, sticky=W + E)
+        #Button(Frame_init, text="+/- Category").grid(row=0, column=2, sticky=W + E)
+        #Button(Frame_init, text="+/- Category", command=edit_category).grid(row=0, column=2, sticky=W + E)
 
-    def edit_category(change=None):
-        # create a global variable for thing that you want to put on the screen for second window
-        # is very important. If not, it would not work
-        global top
-        global my_img
-        # use TopLevel() to create new window
-        top = Toplevel()
-        top.title("Edit Categories")
-
-        var = StringVar()
-        row = 0
-        temp_items = []
-        if change is not None:
-            for i in change:
-                temp_items.append(i)
-        else:
-            for i in items:
-                temp_items.append(i)
-
-        for i in temp_items:
-            Radiobutton(top, text=i, variable=var, value=i, padx=100, anchor=W).grid(row=row, column=0, sticky=W)
-            row += 1
-
-        def delete_category():
-            response = messagebox.askyesno('Confirmation', 'Are you sure you want to delete ' + str(var.get()) + "?")
-            if response == 1:
-                temp_items.remove(var.get())
-                top.destroy()
-                edit_category(temp_items)
-
-        def add_new_category():
-            if new_item.get() != "":
-                temp_items.append(new_item.get())
-                top.destroy()
-                edit_category(temp_items)
-
-        def Save_all_category():
-            items = temp_items
-            top.destroy()
-            Categories(Frame_init, items)
-
-        def Cancel():
-            top.destroy()
-            Categories(Frame_init, items)
-
-        new_item = Entry(top)
-        new_item.grid(row=row, column=0)
-        row += 1
-        Button(top, text="Add new Category", command=add_new_category).grid(row=row, column=0, sticky=W + E)
-        row += 1
-        Button(top, text='Delete', command=delete_category).grid(row=row, column=0, sticky=W + E)
-        row += 1
-        Button(top, text='Save', command=Save_all_category).grid(row=row, column=0, sticky=W + E)
-        row += 1
-        btn2 = Button(top, text='Cancel', command=Cancel).grid(row=row, column=0, sticky=W + E)
-        row += 1
+    # def edit_category(change=None):
+    #     # create a global variable for thing that you want to put on the screen for second window
+    #     # is very important. If not, it would not work
+    #     global top
+    #     global my_img
+    #     # use TopLevel() to create new window
+    #     top = Toplevel()
+    #     top.title("Edit Categories")
+    #
+    #     var = StringVar()
+    #     row = 0
+    #     temp_items = []
+    #     if change is not None:
+    #         for i in change:
+    #             temp_items.append(i)
+    #     else:
+    #         for i in items:
+    #             temp_items.append(i)
+    #
+    #     for i in temp_items:
+    #         Radiobutton(top, text=i, variable=var, value=i, padx=100, anchor=W).grid(row=row, column=0, sticky=W)
+    #         row += 1
+    #
+    #     def delete_category():
+    #         response = messagebox.askyesno('Confirmation', 'Are you sure you want to delete ' + str(var.get()) + "?")
+    #         if response == 1:
+    #             temp_items.remove(var.get())
+    #             top.destroy()
+    #             edit_category(temp_items)
+    #
+    #     def add_new_category():
+    #         if new_item.get() != "":
+    #             temp_items.append(new_item.get())
+    #             top.destroy()
+    #             edit_category(temp_items)
+    #
+    #     def Save_all_category():
+    #         items = temp_items
+    #         top.destroy()
+    #         Categories(Frame_init, items)
+    #
+    #     def Cancel():
+    #         top.destroy()
+    #         Categories(Frame_init, items)
+    #
+    #     new_item = Entry(top)
+    #     new_item.grid(row=row, column=0)
+    #     row += 1
+    #     Button(top, text="Add new Category", command=add_new_category).grid(row=row, column=0, sticky=W + E)
+    #     row += 1
+    #     Button(top, text='Delete', command=delete_category).grid(row=row, column=0, sticky=W + E)
+    #     row += 1
+    #     Button(top, text='Save', command=Save_all_category).grid(row=row, column=0, sticky=W + E)
+    #     row += 1
+    #     btn2 = Button(top, text='Cancel', command=Cancel).grid(row=row, column=0, sticky=W + E)
+    #     row += 1
 
     def new_task_mode(category):
-        available_tasks_frame(category)
+        available_title_frame(category)
         creating_task_frame()
 
-    # Available tasks Frame
-    def available_tasks_frame(category):
-        global available_tasks
-        available_tasks = tasks_for_each_category(category)
+    # Available titile Frame
+    def available_title_frame(category):
+        global available_titles
+        available_titles = titles_for_each_category(category)
         clear_all_widget(Frame1)
+        clear_all_widget(Frame2)
 
         # if the category is new than show this
-        if len(available_tasks) == 0:
+        if len(available_titles) == 0:
             Label(Frame1, text="EMPTY Tasks").grid(row=0, column=0)
-            Button(Frame1, text="Create new task", command=lambda: del_task(available_tasks[val.get()])) \
-                .grid(row=len(available_tasks), column=0, sticky=W + E)
+            Button(Frame1, text="Create new task", command=creating_task_frame) \
+                .grid(row=len(available_titles), column=0, sticky=W + E)
 
         else:
-            global val
+            global title_val
             # variable for the selected task from the selected category
-            val = IntVar()
+            title_val = StringVar()
             # Add all new radio button for each task
-            for id in available_tasks:
-                text_separator = " "
-                Radiobutton(Frame1, text=text_separator.join(i for i in id[2:4]), variable=val,
-                            value=available_tasks.index(id), command=lambda *args: creating_task_frame(val.get())) \
-                    .grid(row=available_tasks.index(id), column=0, sticky=W)
-            val.set(None)
+            for id in available_titles:
+                # Radiobutton(Frame1, text=id[2], variable=title_val,
+                #             value=available_titles.index(id), command=lambda *args: creating_task_frame(title_val.get())) \
+                #     .grid(row=available_titles.index(id), column=0, sticky=W)
+                Radiobutton(Frame1, text=id[2], variable=title_val,
+                            value=id[2], command=lambda *args: available_task_frame(title_val.get(),selected_category.get())) \
+                    .grid(row=available_titles.index(id), column=0, sticky=W)
+            title_val.set(None)
             # Creating Create new task button
             Button(Frame1, text="Create new task", command=creating_task_frame) \
-                .grid(row=len(available_tasks), column=0, sticky=W + E)
+                .grid(row=len(available_titles), column=0, sticky=W + E)
             # Creating Delete selected task button
-            Button(Frame1, text="Delete selected task", command=lambda: del_task(available_tasks[val.get()]),
+            Button(Frame1, text="Delete selected task", command=lambda: del_task(available_tasks[task_id_val.get()]),
                    state=DISABLED) \
-                .grid(row=len(available_tasks) + 1, column=0, sticky=W + E)
+                .grid(row=len(available_titles) + 1, column=0, sticky=W + E)
 
     def del_task(task_id):
         response = messagebox.askyesno('Confirmation',
@@ -182,55 +195,97 @@ def Tasks(current_frame=None):
         if response == 1:
             oid = task_id[0]
             tasks_database.delete_task(oid)
-            available_tasks_frame(selected_category.get())
+            available_title_frame(selected_category.get())
             creating_task_frame()
+
+    def available_task_frame(title=None,category=None):
+        global available_tasks
+        global task_id_val
+        task_id_val = IntVar()
+        task_id_val.set(None)
+        if title is None and category is None:
+            if len(available_titles) == 0:
+                Label(Frame1, text="EMPTY Tasks").grid(row=0, column=0)
+            else:
+                Label(Frame2, text = "Choose the title first").grid(row= 0 , column = 0)
+        else:
+            available_tasks = tasks_for_each_title(title,category)
+            clear_all_widget(Frame2)
+            #clear_all_widget(Frame3)
+
+            # Add all new radio button for each task
+            for id in available_tasks:
+                Radiobutton(Frame2, text=id[3], variable=task_id_val,
+                            value=available_tasks.index(id), command=lambda *args: creating_task_frame(task_id_val.get())) \
+                    .grid(row=available_tasks.index(id), column=0, sticky=W)
 
     # Creating task frame
     def creating_task_frame(task_data_id=None):
         global title
         global task
         global deadline
+        global Task_repeatable
+
         # Label for each input box
-        Task_title_label = Label(Frame2, text="Title")
+        Task_title_label = Label(Frame3, text="Title")
         Task_title_label.grid(row=0, column=0)
-        Task_name_label = Label(Frame2, text="Task")
+        Task_name_label = Label(Frame3, text="Task")
         Task_name_label.grid(row=1, column=0)
-        Task_deadline_label = Label(Frame2, text="Deadline")
-        Task_deadline_label.grid(row=2, column=0)
+        Task_deadline_label = Label(Frame3, text="Deadline")
+        Task_deadline_label.grid(row=3, column=0)
 
         # User input box
-        Task_title_input = Entry(Frame2)
+        Task_title_input = Entry(Frame3)
         Task_title_input.grid(row=0, column=1, columnspan=2)
-        Task_name_input = Entry(Frame2)
+        Task_name_input = Entry(Frame3)
         Task_name_input.grid(row=1, column=1, columnspan=2)
-        Task_deadline_input = Entry(Frame2)
-        Task_deadline_input.grid(row=2, column=1, columnspan=2)
+        Label(Frame3, text = "Format > day/month/year").grid(row = 2, column = 1, columnspan =2)
+        Task_deadline_input = Entry(Frame3)
+        Task_deadline_input.grid(row=3, column=1, columnspan=2)
+
+        Task_repeatable = IntVar()
+        Label(Frame3,text = "Repeatable").grid(row =4 , column =0)
+        Radiobutton(Frame3,text= "yes",variable = Task_repeatable,val = 1,command = lambda :print(Task_repeatable.get())).grid(row =4, column =1)
+        Radiobutton(Frame3,text= "no",variable = Task_repeatable,val = 0,command = lambda :print(Task_repeatable.get())).grid(row =4, column =2)
 
         def save_task():
-            title = Task_title_input.get()
-            task = Task_name_input.get()
-            deadline = Task_deadline_input.get().split(".")
-            if task_data_id is None:
-                tasks_database.submit_new_task(selected_category.get(),
+            if len(Task_title_input.get())== 0:
+                messagebox.showerror("Input Error", message="Missing Task Title")
+            elif len(Task_name_input.get()) == 0:
+                messagebox.showerror("Input Error", message="Missing Task Name")
+            elif len(Task_deadline_input.get()) == 0:
+                messagebox.showerror("Input Error", message="Missing Task deadline")
+            elif not deadline_checker(Task_deadline_input.get()):
+                messagebox.showerror("Input Error", message="Incorrect deadline format")
+
+            else:
+                title = Task_title_input.get()
+                task = Task_name_input.get()
+                deadline = Task_deadline_input.get().split("/")
+                if task_data_id is None:
+                    tasks_database.submit_new_task(selected_category.get(),
+                                                   title,
+                                                   task,
+                                                   deadline[0],
+                                                   deadline[1],
+                                                   deadline[2],
+                                                   repeatable = int(Task_repeatable.get())
+                                                   )
+                else:
+
+                    oid = available_titles[task_id_val.get()][0]
+                    tasks_database.update_task(oid,
+                                               selected_category.get(),
                                                title,
                                                task,
-                                               deadline[0],
-                                               deadline[1],
-                                               deadline[2]
+                                               int(deadline[0]),
+                                               int(deadline[1]),
+                                               int(deadline[2]),
+                                               repeatable = int(Task_repeatable.get())
                                                )
-            else:
-
-                oid = available_tasks[val.get()][0]
-                tasks_database.update_task(oid,
-                                           selected_category.get(),
-                                           title,
-                                           task,
-                                           int(deadline[0]),
-                                           int(deadline[1]),
-                                           int(deadline[2])
-                                           )
-            available_tasks_frame(selected_category.get())
-            clear_input()
+                Task_repeatable.set(None)
+                available_title_frame(selected_category.get())
+                clear_input()
 
         def clear_input():
             Task_title_input.delete(0, END)
@@ -245,48 +300,61 @@ def Tasks(current_frame=None):
             # show the data on the UI
             Task_title_input.insert(0, data[2])
             Task_name_input.insert(0, data[3])
-            seperator = "."
+
+            seperator = "/"
             Task_deadline_input.insert(0, seperator.join(data[4:7]))
+            print(data[7:11])
+            Task_repeatable.set(int(data[7]))
 
         if task_data_id is not None:
             # if user click a created task to edit
+            title_val.set(available_tasks[task_id_val.get()][2])
             show_edit_input(task_data_id)
 
         if task_data_id is None:
-            val.set(None)
+            title_val.set(None)
+            task_id_val.set(None)
             # Save task btn
-            Save_task_btn = Button(Frame2, text="Save", command=save_task)
-            Save_task_btn.grid(row=3, column=1, sticky=W + E)
+            Save_task_btn = Button(Frame3, text="Save", command=save_task)
+            Save_task_btn.grid(row=5, column=1, sticky=W + E)
             # Disable delete button if the user has not click a task
 
-            Button(Frame1, text="Delete selected task", command=lambda: del_task(available_tasks[val.get()]),
+            Button(Frame1, text="Delete selected task", command=lambda: del_task(available_tasks[task_id_val.get()]),
                    state=DISABLED) \
-                .grid(row=len(available_tasks) + 1, column=0, sticky=W + E)
+                .grid(row=len(available_titles) + 1, column=0, sticky=W + E)
         else:
             # Save edit button
-            Save_task_btn = Button(Frame2, text="Save Edit", command=save_task)
-            Save_task_btn.grid(row=3, column=1, sticky=W + E)
+            Save_task_btn = Button(Frame3, text="Save Edit", command=save_task)
+            Save_task_btn.grid(row=5, column=1, sticky=W + E)
             # Allow user to delete task if they clicked it
-            Button(Frame1, text="Delete selected task", command=lambda: del_task(available_tasks[val.get()])) \
-                .grid(row=len(available_tasks) + 1, column=0, sticky=W + E)
+            Button(Frame1, text="Delete selected task", command=lambda: del_task(available_tasks[task_id_val.get()])) \
+                .grid(row=len(available_titles) + 1, column=0, sticky=W + E)
         # Clear task btn
-        Clear_task_btn = Button(Frame2, text="Clear", command=clear_input)
-        Clear_task_btn.grid(row=3, column=2, sticky=W + E)
+        Clear_task_btn = Button(Frame3, text="Clear", command=clear_input)
+        Clear_task_btn.grid(row=5, column=2, sticky=W + E)
 
     def back_mainmenu():
         Back_MainPage = Button(Frame_init, text="MainPage", command=lambda: MainPage(Frame_init))
-        Back_MainPage.grid(row=2, column=0, columnspan=3, sticky=W + E)
+        Back_MainPage.grid(row=2, column=0, columnspan=4, sticky=W + E)
 
     def clear_all_widget(frame):
         # Destory all the existing widget in the Frame1
         for i in frame.winfo_children():
             i.destroy()
 
-    Frame_init, Frame1, Frame2 = init()
-    available_tasks_frame(selected_category.get())
+    Frame_init, Frame1,Frame2, Frame3 = init()
+    available_title_frame(selected_category.get())
+    available_task_frame()
     creating_task_frame()
     back_mainmenu()
 
+def deadline_checker(date):
+    correct = False
+    if date.count("/") == 2:
+        for i in date.split("/"):
+            if i.replace(" ", "").isnumeric():
+                correct = True
+    return correct
 
 def Templates(current_frame=None):
     if current_frame is not None:

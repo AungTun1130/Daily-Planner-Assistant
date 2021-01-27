@@ -11,6 +11,7 @@ class TimeTableTemplateClass:
                                "Self-care", "Self-development",
                                "Social", "Short break", "Long break"])
         self.DutyCategory = np.array(["Work", "Lunch", "Dinner", "Self-care", "Self-development", "Relax","Short break", "Long break","Custom"])
+        self.Category = np.array(["Work", "Self-care", "Self-development", "Relax"])
         if start_time is not None:
             self.PlannedDate = planned_date
             print(start_time)

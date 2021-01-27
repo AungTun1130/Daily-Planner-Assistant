@@ -31,6 +31,7 @@ class TimetableDataManagement:
                     deadline_day integer,
                     deadline_month integer,
                     deadline_year integer,
+                    repeatable integer,
                     active integer,
                     complete integer
                     )""")
@@ -41,7 +42,7 @@ class TimetableDataManagement:
             conn.close()
 
         def submit_new_task(self, category=None, title=None, task=None,
-                            deadline_day=None, deadline_month=None, deadline_year=None, active=False, complete=False):
+                            deadline_day=None, deadline_month=None, deadline_year=None,repeatable = False, active=False, complete=False):
             # Create a database or connect to one
             conn = sqlite3.connect(self.task_dir)
             # Create cursor
@@ -49,7 +50,7 @@ class TimetableDataManagement:
 
             c.execute(
                 "INSERT INTO Task VALUES(:category, :title, :task, "
-                ":deadline_day, :deadline_month, :deadline_year,:active, :complete)",
+                ":deadline_day, :deadline_month, :deadline_year,:repeatable,:active, :complete)",
                 {
                     "category": category,
                     "title": title,
@@ -57,6 +58,7 @@ class TimetableDataManagement:
                     "deadline_day": deadline_day,
                     "deadline_month": deadline_month,
                     "deadline_year": deadline_year,
+                    "repeatable": repeatable,
                     "active": active,
                     "complete": complete
                 })
@@ -84,7 +86,7 @@ class TimetableDataManagement:
 
         # Editing the specific task
         def update_task(self, oid=None, category=None, title=None, task=None,
-                        deadline_day=None, deadline_month=None, deadline_year=None, active=False, complete=False):
+                        deadline_day=None, deadline_month=None, deadline_year=None,repeatable = False, active=False, complete=False):
             # Connect to database
             conn = sqlite3.connect(self.task_dir)
             # Create cursor
@@ -97,6 +99,7 @@ class TimetableDataManagement:
                 deadline_day    = :deadline_day,
                 deadline_month  = :deadline_month,
                 deadline_year   = :deadline_year,
+                repeatable      = :repeatable,
                 active          = :active,
                 complete        = :complete
                 
@@ -108,6 +111,7 @@ class TimetableDataManagement:
                           'deadline_day': deadline_day,
                           'deadline_month': deadline_month,
                           'deadline_year': deadline_year,
+                          "repeatable": repeatable,
                           'active': active,
                           'complete': complete,
 
@@ -374,7 +378,7 @@ if __name__ == '__main__':
 
     x = TimetableDataManagement().Task('task')
     y = TimetableDataManagement().Template('Default')
-    x.submit_new_task("Work", "IDT", "Meeting", 7, 6, 2021)
+    x.submit_new_task("Work", "IDT", "Meeting", 7, 6, 2021,True)
     x.submit_new_task("Work", "Research", "Drone control system", 7, 6, 2021)
     x.submit_new_task("Self-care", "Cooking", "Learn new thai recipe", 7, 6, 2021)
     x.submit_new_task("Self-care", "Exercise", "Push UP", 7, 6, 2021)
